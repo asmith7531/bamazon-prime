@@ -2,76 +2,67 @@ var inquirer = require("inquirer");
 var mysql = require("mysql");
 var newItem;
 inquirer
-  .prompt([
-    {
-      type: 'list',
-      name: 'action',
-      message: 'what do you want to do?',
-      choices: [
-        new inquirer.Separator(),
-        'buy',
-        new inquirer.Separator(),
-        'sell',
-        new inquirer.Separator(),
-      ]
-    },
-  ])
+  .prompt([{
+    type: 'list',
+    name: 'action',
+    message: 'What do you want to do?',
+    choices: [
+      new inquirer.Separator(),
+      'buy',
+      new inquirer.Separator(),
+      'sell',
+      new inquirer.Separator(),
+    ]
+  }, ])
   .then(answers => {
-    if (answers.action === "buy"){
+    if (answers.action === "buy") {
       //calls the buy function to initiate the inquirer prompts associated with buying
       buy()
-    }
-    else{
+    } else {
       sell()
     }
   });
 function buy() {
-  inquirer.prompt([
-    {
-      type:'list',
-      name:'action',
-      message:new inquirer.Separator(),
-      choices:[
-        new inquirer.Separator(),
-        "search by item name",
-        new inquirer.Separator(),
-        "search by department",
-        new inquirer.Separator(),
-      ]
-    }
-  ]).then(
-    
+  inquirer.prompt([{
+    type: 'list',
+    name: 'action',
+    message: new inquirer.Separator(),
+    choices: [
+      new inquirer.Separator(),
+      "Search by item name",
+      new inquirer.Separator(),
+      "Search by department",
+      new inquirer.Separator(),
+    ]
+  }]).then(answers => {
+    console.log(answers);
     ///////////////////////what do you want this do do?
-    //needs to console.log/display items from the sql database that fit the search query
-  )
+    //needs to call a function that will prompt the user with the names of all the results of their query items from the sql database that fit the search query and call 
+  })
 }
 function sell() {
-  const prompts = new Rx.Subject();
-inquirer.prompt(prompts);
- 
-// At some point in the future, push new questions
-prompts.next({
-  type:'input',
-  name:'name',
-  message:'What is the name of the item?'
-});
-prompts.next({
-  type:'list',
-  name:'dept',
-  message:'What department would you like it stored in?'
-});
-prompts.next({
-  type:'number',
-  name:'price',
-  message:'What is the minimum price per unit of your item?'
-});
-prompts.next({
-  type:'number',
-  name:'quantity',
-  message:'How many of them do you want to sell?'
-});
-// When you're done
-prompts.complete()
+  inquirer.prompt([{
+      type: 'input',
+      name: 'name',
+      message: 'What is the name of your item?'
+    },
+    {
+      type: 'list',
+      name: "dept",
+      message: 'What department should it me categorized into?',
+      choices: [
+        'Home',
+        'Garden',
+        'Computers',
+        'Electronics',
+        "Toys"
+      ]
+    }
+  ]).then(answers => {
+    var item = answers;
+    uploadItem(answers);
+    /////////////////////////what do you want this to do?
+    //calll a function that will push the answers object into the MySQL database
+    //--pass in answers object as a parameter of the function
+  })
 }
-
-console.log(newItem);
