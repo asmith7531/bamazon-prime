@@ -1,0 +1,24 @@
+{
+  "name": "bamazon-prime",
+  "version": "1.0.0",
+  "description": "An online storefront created to help me practice MySQL!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asmith7531/bamazon-prime.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/asmith7531/bamazon-prime/issues"
+  },
+  "homepage": "https://github.com/asmith7531/bamazon-prime#readme",
+  "dependencies": {
+    "inquirer": "^6.3.1",
+    "mysql": "^2.17.1"
+  }
+}
