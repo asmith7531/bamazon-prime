@@ -18,21 +18,19 @@ function start(){
     .prompt([{
       type: 'list',
       name: 'action',
-      message: 'What do you want to do?',
+      message: 'Would you like to place an order at Bamazon?',
       choices: [
       
-        'buy',
+        'yes',
         new inquirer.Separator(),
-        'sell',
+        'no',
   
       ]
     }, ])
     .then(answers => {
-      if (answers.action === "buy") {
+      if (answers.action === "yes") {
         //calls the buy function to initiate the inquirer prompts associated with buying
         buy();
-      } else if (answers.action === "sell") {
-        sell();
       }else{
         con.end;
       }
