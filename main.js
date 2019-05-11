@@ -1,77 +1,100 @@
 var inquirer = require("inquirer");
 var mysql = require("mysql");
 var newItem;
-inquirer
-  .prompt([
-    {
+
+//connecting the js to the mysql database
+var con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "Zenziethewonderdog26!",
+  database:"bamazon"
+});
+con.connect(function(err,res) {
+  if (err) throw err;
+start();
+});
+function start(){
+  inquirer
+    .prompt([{
       type: 'list',
       name: 'action',
-      message: 'what do you want to do?',
+      message: 'What do you want to do?',
       choices: [
-        new inquirer.Separator(),
+      
         'buy',
         new inquirer.Separator(),
         'sell',
-        new inquirer.Separator(),
+  
       ]
-    },
-  ])
-  .then(answers => {
-    if (answers.action === "buy"){
-      //calls the buy function to initiate the inquirer prompts associated with buying
-      buy()
-    }
-    else{
-      sell()
-    }
-  });
-function buy() {
-  inquirer.prompt([
-    {
-      type:'list',
-      name:'action',
-      message:new inquirer.Separator(),
-      choices:[
-        new inquirer.Separator(),
-        "search by item name",
-        new inquirer.Separator(),
-        "search by department",
-        new inquirer.Separator(),
-      ]
-    }
-  ]).then(
-    
-    ///////////////////////what do you want this do do?
-    //needs to console.log/display items from the sql database that fit the search query
-  )
-}
-function sell() {
-  const prompts = new Rx.Subject();
-inquirer.prompt(prompts);
- 
-// At some point in the future, push new questions
-prompts.next({
-  type:'input',
-  name:'name',
-  message:'What is the name of the item?'
-});
-prompts.next({
-  type:'list',
-  name:'dept',
-  message:'What department would you like it stored in?'
-});
-prompts.next({
-  type:'number',
-  name:'price',
-  message:'What is the minimum price per unit of your item?'
-});
-prompts.next({
-  type:'number',
-  name:'quantity',
-  message:'How many of them do you want to sell?'
-});
-// When you're done
-prompts.complete()
-}
+    }, ])
+    .then(answers => {
+      if (answers.action === "buy") {
+        //calls the buy function to initiate the inquirer prompts associated with buying
+        buy();
+      } else if (answers.action === "sell") {
+        sell();
+      }else{
+        con.end;
+      }
+    });
+  }
 
-console.log(newItem);
+function buy() {
+  con.query("SELECT * FROM inventory", function(err, results) {
+    if (err) throw err;
+   
+    // once you have the items, prompt the user for which they'd like to bid on
+    var inventoryArray = [];
+    inquirer
+      .prompt([
+        {
+          name: "name",
+          type: "rawlist",
+          choices: function() {
+            for (var i = 0; i < results.length; i++) {
+              inventoryArray.push(results[i]);
+            }
+            return inventoryArray;
+          },
+          message: "What item would you like to buy?"
+        },
+        {
+          name: "quantity",
+          type: "number",
+          message: "How many would you like to purchase?"
+        }
+      ]).then(order=>{
+        
+        for (var i = 0; i < inventoryArray.length; i++) {
+          if (inventoryArray[i].name==order.name){
+            
+            
+           var inStock = parseInt(inventoryArray[i].quantity)
+           console.log(inStock)
+           console.log(order.quantity)
+            if (inventoryArray[i].quantity>order.quantity){
+              inStock -= order.quantity
+              con.query(
+                "UPDATE inventory SET ? WHERE ?",
+                [
+                  {
+                   quantity : inStock
+                  },
+                  {
+                    id:inventoryArray[i].id
+                  }
+                ],
+                function(error) {
+                  if (error) throw err;
+                  console.log("Order placed successfully!");
+                  start();
+                }
+              );
+            }
+          }
+        }
+        console.log(inventoryArray)
+        return inventoryArray;
+      })
+    })
+  }
